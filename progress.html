@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life & Year Tracker</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #fff0f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            width: 400px;
+            height: 400px;
+            background-color: #ffb6c1;
+            display: grid;
+            grid-template-rows: repeat(3, 1fr);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            gap: 15px;
+        }
+
+        .tracker-box {
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h3 {
+            margin: 0 0 8px 0;
+            font-size: 0.85rem;
+            color: #d81b60;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-bg {
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+            height: 14px;
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid rgba(216, 27, 96, 0.1);
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #ff69b4, #ff1493);
+            height: 100%;
+            width: 0%;
+            transition: width 1.5s ease-in-out;
+        }
+
+        .stats {
+            margin-top: 5px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #ad1457;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Age Progress (Out of 100) -->
+    <div class="tracker-box">
+        <h3 id="age-title">Life Progress (Age)</h3>
+        <div class="progress-bg">
+            <div id="bar-age" class="progress-fill"></div>
+        </div>
+        <div id="text-age" class="stats">Loading...</div>
+    </div>
+
+    <!-- Month Progress (Dynamic Days) -->
+    <div class="tracker-box">
+        <h3 id="month-title">Month Progress</h3>
+        <div class="progress-bg">
+            <div id="bar-month" class="progress-fill"></div>
+        </div>
+        <div id="text-month" class="stats">Loading...</div>
+    </div>
+
+    <!-- Year Progress (360 Day Basis) -->
+    <div class="tracker-box">
+        <h3>Year Progress (360 Day Basis)</h3>
+        <div class="progress-bg">
+            <div id="bar-year" class="progress-fill"></div>
+        </div>
+        <div id="text-year" class="stats">Loading...</div>
+    </div>
+</div>
+
+<script>
+    function updateTrackers() {
+        const now = new Date();
+        
+        // 1. Age Logic (Birthday: 10/13/2004)
+        const birthday = new Date('2004-10-13T00:00:00');
+        const ageInMs = now - birthday;
+        const hundredYearsInMs = 100 * 365.25 * 24 * 60 * 60 * 1000;
+        const agePercent = (ageInMs / hundredYearsInMs) * 100;
+        const exactAge = ageInMs / (365.25 * 24 * 60 * 60 * 1000);
+        
+        document.getElementById('bar-age').style.width = Math.min(agePercent, 100) + '%';
+        document.getElementById('text-age').innerText = `Age: ${exactAge.toFixed(2)} / 100 years`;
+
+        // 2. Dynamic Month Logic
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+        const currentDay = now.getDate();
+        const monthPercent = (currentDay / daysInMonth) * 100;
+        
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        document.getElementById('month-title').innerText = `${monthNames[now.getMonth()]} Progress`;
+        document.getElementById('bar-month').style.width = monthPercent + '%';
+        document.getElementById('text-month').innerText = `Day ${currentDay} of ${daysInMonth}`;
+
+        // 3. Year Progress (360 Day Basis)
+        // Formula: ((Month-1)*30 + Day) / 360
+        const dayOf360 = ((now.getMonth()) * 30) + Math.min(now.getDate(), 30);
+        const year360Percent = (dayOf360 / 360) * 100;
+        
+        document.getElementById('bar-year').style.width = Math.min(year360Percent, 100) + '%';
+        document.getElementById('text-year').innerText = `${dayOf360} / 360 days completed`;
+    }
+
+    updateTrackers();
+</script>
+
+</body>
+</html>
